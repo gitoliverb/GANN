@@ -1,0 +1,10 @@
+﻿D:\Program Files\Visual Studio 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (PandaChecker.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  stdafx.cpp
+  NeuralNetwork.cpp
+c:\users\brandon\documents\practice\machine learning vs new\gann\pandachecker\neuralnetwork.cpp(35): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\brandon\documents\practice\machine learning vs new\gann\pandachecker\neuralnetwork.cpp(93): warning C4018: '>': signed/unsigned mismatch
+c:\users\brandon\documents\practice\machine learning vs new\gann\pandachecker\neuralnetwork.cpp(114): warning C4101: 'curr_output': unreferenced local variable
+  Main.cpp
+  Generating Code...
+  PandaChecker.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.exe
+  PandaChecker.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.pdb (Partial PDB)
