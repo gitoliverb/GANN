@@ -1,0 +1,14 @@
+﻿  World.cpp
+c:\users\brandon\documents\practice\gann\pandachecker\world.cpp(41): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\brandon\documents\practice\gann\pandachecker\world.cpp(42): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\brandon\documents\practice\gann\pandachecker\world.cpp(48): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+  stdafx.cpp
+  NeuralNetwork.cpp
+c:\users\brandon\documents\practice\gann\pandachecker\neuralnetwork.cpp(35): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\brandon\documents\practice\gann\pandachecker\neuralnetwork.cpp(93): warning C4018: '>': signed/unsigned mismatch
+c:\users\brandon\documents\practice\gann\pandachecker\neuralnetwork.cpp(114): warning C4101: 'curr_output': unreferenced local variable
+  Main.cpp
+  Creature.cpp
+  Generating Code...
+  GANN.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.exe
+  GANN.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.pdb (Partial PDB)
