@@ -1,4 +1,0 @@
-﻿D:\Program Files\Visual Studio 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (PandaChecker.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Creature.cpp
-  PandaChecker.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.exe
-  PandaChecker.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.pdb (Partial PDB)
