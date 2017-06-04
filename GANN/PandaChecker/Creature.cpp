@@ -1,7 +1,7 @@
 #include "Creature.h"
+#include "NeuralNetwork.h"
 
-
-NeuralNetwork setUpNN() {
+NeuralNetwork setUpCreatureNN() {
 	int num_inputs = 30;
 	int num_layers = 3;
 	int num_outputs = 2;
@@ -15,6 +15,14 @@ NeuralNetwork setUpNN() {
 }
 
 Creature::Creature() {
-	nn = setUpNN();
+	NeuralNetwork nn = setUpCreatureNN();
 	nn.initNeuralNetwork();
+}
+
+void Creature::update() {
+
+}
+
+void Creature::display() {
+
 }

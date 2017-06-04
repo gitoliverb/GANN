@@ -5,8 +5,8 @@
 using namespace std;
 class World {
 public:
-	list<Creature *> creatures;
-	list<Creature *> parents;
+	Creature * creatures;
+	Creature * parents;
 	int generation;
 	int num_creatures;
 	int max_num_updates;
@@ -15,7 +15,7 @@ public:
 	float total_fitness;
 	float best_fitness;
 	float avg_fitness;
-public:
+
 	void initWorld();
 	void runNextGeneration();
 	void update();

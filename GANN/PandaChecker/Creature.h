@@ -8,8 +8,8 @@
 
 class Creature {
 public:
-	double fitness_level;
-	NeuralNetwork nn;
+	double fitness;
+	//NeuralNetwork nn;
 
 public:
 	Creature();
