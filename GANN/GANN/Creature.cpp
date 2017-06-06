@@ -15,12 +15,14 @@ NeuralNetwork setUpCreatureNN() {
 }
 
 Creature::Creature() {
-	NeuralNetwork nn = setUpCreatureNN();
+	nn = setUpCreatureNN();
 	nn.initNeuralNetwork();
+	//nn.printNetworkData();
+	fitness = 0;
 }
 
 void Creature::update() {
-
+	fitness++;
 }
 
 void Creature::display() {

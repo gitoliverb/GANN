@@ -1,7 +1,7 @@
 // Main.cpp : Defines the entry point for the console application.
 //
 
-#include "NeuralNetwork.h"
+#include "World.h"
 
 NeuralNetwork setUpNN() {
 	int num_inputs = 30;
@@ -16,14 +16,26 @@ NeuralNetwork setUpNN() {
 	return nn;
 }
 
-int main(int argc, char** argv) {
+void testNeuralNetwork() {
 	NeuralNetwork nn = setUpNN();
 
 	nn.initNeuralNetwork();
 	string  s = "hello world";
 	nn.sendInput(s);
+	nn.printNetworkStructure();
 	nn.printNetworkData();
 	nn.train(1);
 	nn.printOutputs();
+}
+
+void testWorld() {	//not working yet
+	World w = World();
+	w.initWorld();
+	w.run();
+}
+
+int main(int argc, char** argv) {
+	testNeuralNetwork();
+	//testWorld();
 	//return 0;
 }

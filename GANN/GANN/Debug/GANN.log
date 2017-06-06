@@ -1,8 +1,10 @@
-﻿  stdafx.cpp
-  NeuralNetwork.cpp
-c:\users\brandon\documents\practice\machine learning vs new\gann\gann\neuralnetwork.cpp(35): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\brandon\documents\practice\machine learning vs new\gann\gann\neuralnetwork.cpp(93): warning C4018: '>': signed/unsigned mismatch
-c:\users\brandon\documents\practice\machine learning vs new\gann\gann\neuralnetwork.cpp(114): warning C4101: 'curr_output': unreferenced local variable
-  Generating Code...
+﻿  World.cpp
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(13): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(77): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(78): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(93): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(97): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(127): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(106): warning C4715: 'World::selectParent': not all control paths return a value
   GANN.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.exe
   GANN.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.pdb (Partial PDB)

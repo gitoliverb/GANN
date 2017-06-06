@@ -5,6 +5,10 @@
 
 using namespace std;
 
+NeuralNetwork::NeuralNetwork() {
+	//default constructor
+}
+
 NeuralNetwork::NeuralNetwork(int num_i, int num_hl, int* num_hn, int num_o) {
 	n_inputs = num_i;
 	n_outputs = num_o;
@@ -38,20 +42,14 @@ void NeuralNetwork::initNeuralNetwork() {
 		weights[i] = new(double*[n_hidden_nodes[i]]);
 		bias[i] = new(double[n_hidden_nodes[i]]);
 
-		cout << "layer " << i + 1 << " with " << n_hidden_nodes[i] << " nodes:" << endl;
 		//Each node
 		for (int j = 0; j < n_hidden_nodes[i]; j++) {
 			weights[i][j] = new(double[num_inputs]);
 
-			cout << "node " << j + 1 << " weights: " << endl;
 			//Each input
 			for (int k = 0; k < num_inputs; k++) {
 				weights[i][j][k] = (((double)(rand() % 100) + 1) / 100 * 2 * rH) - rH;
 			}
-			for (int k = 0; k < num_inputs; k++) {
-				cout << weights[i][j][k] << ", ";
-			}
-			cout << endl;
 
 			bias[i][j] = (((double)(rand() % 100) + 1) / 100 * 2 * rH) - rH;
 		}
@@ -66,15 +64,10 @@ void NeuralNetwork::initNeuralNetwork() {
 	for (int j = 0; j < n_outputs; j++) {
 		weights[n_hidden_layers][j] = new(double[num_inputs]);
 
-		cout << "output node " << j + 1 << " weights: " << endl;
 		//Each input
 		for (int k = 0; k < num_inputs; k++) {
 			weights[n_hidden_layers][j][k] = (((double)(rand() % 100) + 1) / 100 * 2 * rH) - rH;
 		}
-		for (int k = 0; k < num_inputs; k++) {
-			cout << weights[n_hidden_layers][j][k] << ", ";
-		}
-		cout << endl;
 	}
 }
 
@@ -89,7 +82,6 @@ double NeuralNetwork::dot(double* w, double* x) {
 void NeuralNetwork::sendInput(string x) {
 	inputs = new(double[n_inputs]);
 	for (int i = 0; i < n_inputs; i++) {
-		//inputs[i] = (double)stoi(&(x.at[i]), nullptr, 2);
 		if (x.size() > i) {
 			inputs[i] = (int)x.at(i);
 		}
@@ -120,6 +112,7 @@ void NeuralNetwork::trainHelper(double * x) {
 		for (int j = 0; j < n_hidden_nodes[i]; j++) {
 			double z = 0;
 			//Each weight
+			//z = summation(w*x) + b
 			for (int k = 0; k < curr_n_inputs; k++) {
 				z += weights[i][j][k] * curr_input[k];
 			}
@@ -136,11 +129,35 @@ void NeuralNetwork::train(int max_num_train) {
 		trainHelper(inputs);
 	}
 }
-void NeuralNetwork::printNetworkData() {
+
+double**** NeuralNetwork::getWeights() {
+	return &weights;
+}
+
+void NeuralNetwork::printNetworkStructure() {
 	cout << endl << "|==PRINTING NODE AND LAYERS OF NETWORK==|" << endl;
 	for (int i = 0; i < n_hidden_layers; i++) {
 		cout << "layer: " << i + 1 << endl;
 		cout << "nodes: " << n_hidden_nodes[i] << endl;
+	}
+}
+
+void NeuralNetwork::printNetworkData() {
+	cout << endl << "|==PRINTING WEIGHTS OF NETWORK==|" << endl;
+	
+	int curr_n_inputs = n_inputs;
+	//Each layer
+	for (int i = 0; i < n_hidden_layers; i++) {
+		cout << "LAYER [" << i + 1 << "] with " << n_hidden_nodes[i] << " nodes:" << endl;
+		//Each node
+		for (int j = 0; j < n_hidden_nodes[i]; j++) {
+			cout << "  Node " << j + 1 << ") weights: " << endl;
+			for (int k = 0; k < curr_n_inputs; k++) {
+				cout << weights[i][j][k] << ", ";
+			}
+			cout << endl;
+		}
+		curr_n_inputs = n_hidden_nodes[i];
 	}
 }
 
