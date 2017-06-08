@@ -35,7 +35,12 @@ void testWorld() {	//not working yet
 }
 
 int main(int argc, char** argv) {
-	testNeuralNetwork();
-	//testWorld();
+	//setup for generating unique randoms.
+	srand(time(NULL));
+
+	//Run tests
+	//testNeuralNetwork();
+	testWorld();
+
 	//return 0;
 }

@@ -13,7 +13,6 @@ private:
 	double*** weights;
 	double** bias;
 private:
-	double * getLayerOutput(int curr_hidden_layer, int curr_num_nodes, double * x, int curr_num_inputs);
 	void trainHelper(double * x);
 
 public:
@@ -30,9 +29,12 @@ public:
 	double sigmoid(double z);
 	double dot(double* w, double* x);
 	void sendInput(string x);
+	void sendInput(int* x);
+	void train();
 	void train(int max_num_train);
 	void printNetworkStructure();
 	void printNetworkData();
 	void printOutputs();
 	double**** getWeights();
+	double * getOutput();
 };
