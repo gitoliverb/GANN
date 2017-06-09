@@ -47,7 +47,7 @@ Creature::Creature(int num_inputs, int num_outputs) {
 
 void Creature::update() {
 	x_velocity = nn->getOutput()[0];
-	y_velocity = nn->getOutput()[1];
+	x_velocity = -1*nn->getOutput()[1];
 	x_pos += x_velocity;
 	y_pos += y_velocity;
 	
@@ -55,18 +55,35 @@ void Creature::update() {
 	if (x_pos >= x_bounds) {
 		x_pos = x_bounds;
 	}
-	if (x_pos <= x_bounds) {
+	if (x_pos <= 0) {
 		x_pos = 0;
 	}
 	if (y_pos >= y_bounds) {
 		y_pos = y_bounds;
 	}
-	if (y_pos <= y_bounds) {
+	if (y_pos <= 0) {
 		y_pos = 0;
 	}
 	
 }
 
 void Creature::display() {
+	
+	glColor4f(0.0, 1.0, 0.0, 1.0);
+	/*
+	glBegin(GL_POLYGON);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.5, 0.0, 0.0);
+		glVertex3f(0.5, 0.5, 0.0);
+		glVertex3f(0.0, 0.5, 0.0);
+	glEnd();
+	*/
+	glBegin(GL_POLYGON);
+		glVertex3f(x_pos, y_pos, 0.0);
+		glVertex3f(x_pos + 10, y_pos, 0.0);
+		glVertex3f(x_pos + 10, y_pos + 10, 0.0);
+		glVertex3f(x_pos, y_pos + 10, 0.0);
+	glEnd();
 
+	
 }

@@ -4,6 +4,7 @@
 #include <string>
 #include <stdlib.h>
 #include <ctime>
+#include <glut.h>
 #include "NeuralNetwork.h"
 
 class Creature {

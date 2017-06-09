@@ -7,15 +7,59 @@ World::World() {
 
 }
 
+World * World::instance = 0;
+void World::setInstance(World * w) {
+	instance = w;
+}
+
+//==OPENGL FUNCTION==//
+void World::displayWrapper() {
+	instance->display();
+}
+
+void World::updateWrapper() {
+	if (!instance->is_done) {
+		instance->update();
+	}
+}
+
+//Must be called after initWorld()
+void World::initDisplay(int argc, char** argv) {
+	//Display
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitWindowPosition(480, 0);
+	glutInitWindowSize(screen_width, screen_height);
+	glutCreateWindow("Lighthouse3D- GLUT Tutorial");
+
+	// register callbacks
+	glutDisplayFunc(displayWrapper);
+	glutReshapeFunc(reshape);
+	glutIdleFunc(updateWrapper);
+	// enter GLUT event processing cycle
+	glutMainLoop();
+
+}
+
+void World::reshape(int w, int h) {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, w, 0, h, -1, 1);
+
+	// Update OpenGL viewport and internal variables
+	glViewport(0, 0, w, h);
+}
+//===================//
+
 void World::initWorld() {
-	screen_width = 480;	
-	screen_height = 360;
-	num_obstacles = 3;
+	is_done = false;
+	curr_update = 0;
+	num_obstacles = 10;
 	num_creatures = 20;
 	generation = 0;
 	selection_perc = 0.4;
-	max_num_updates = 6000;
-	max_num_generation = 1;
+	max_num_updates = 300;
+	max_num_generation = 25;
 
 	obstacles = new(Obstacle[num_obstacles]);
 	creatures = new(Creature[num_creatures]);
@@ -27,75 +71,157 @@ void World::initWorld() {
 		obstacles[i] = Obstacle();
 		obstacles[i].x_bounds = screen_width;
 		obstacles[i].y_bounds = screen_height;
-		obstacles[i].y_velocity = -1 * rand()%2; //start by moving downard
+	}
+	//init creatures
+	for (int i = 0; i < num_creatures; i++) {
+		creatures[i] = Creature(num_obstacles *4 /*4 properties*/ + 4,  2 /*binary decision of left or right*/);
+		creatures[i].x_bounds = screen_width;
+		creatures[i].y_bounds = screen_height;
+	}
+	resetPositions();
+}
+
+void World::resetPositions() {
+	for (int i = 0; i < num_obstacles; i++) {
+		obstacles[i].x_velocity = -2 * ((rand() % 101) / 100.0) - 1;
+		obstacles[i].y_velocity = -2 * ((rand() % 101) / 100.0) - 1; //start by moving downard
 		//set its position randomly on screen
 		obstacles[i].x_pos = (rand() % (screen_width / 3)) + (screen_width / 3);
 		obstacles[i].y_pos = (rand() % (2 * (screen_height / 3))) + (screen_height / 3);
 	}
-	//init creatures
 	for (int i = 0; i < num_creatures; i++) {
-		creatures[i] = Creature(num_obstacles*4 /*4 properties*/,  2 /*binary decision of left or right*/);
 		//set its position randomly on screen
-		creatures[i].x_pos = (rand() % (screen_width / 3)) + (screen_width / 3); 
+		creatures[i].x_pos = (rand() % (screen_width / 3)) + (screen_width / 3);
 		creatures[i].y_pos = (rand() % (screen_height / 3));
 	}
 }
 
 void World::run() {
+	is_done = false;
 	update();
 }
 
 void World::runNextGeneration() {
+	curr_update = 0;
 	num_new_creatures = 0;
-	//crossover until we have enough creatures
-	while (num_new_creatures < num_creatures) {
-		crossover();
-	}
-
-	for (int i = 0; i < num_creatures; i++) {
-		creatures[i].nn->~NeuralNetwork();
-		creatures[i] = new_creatures[i];
-	}
 	generation++;
+	if (generation > max_num_generation) {
+		is_done = true;
+		cout << "finished" << endl;
+	} else {
+		//crossover until we have enough creatures
+		while (num_new_creatures < num_creatures) {
+			crossover();
+		}
+
+		//Make new obstacles
+		for (int i = 0; i < num_obstacles; i++) {
+			obstacles[i] = Obstacle();
+			obstacles[i].x_bounds = screen_width;
+			obstacles[i].y_bounds = screen_height;
+		}
+
+		for (int i = 0; i < num_creatures; i++) {
+			creatures[i].nn->~NeuralNetwork();
+			creatures[i] = new_creatures[i];
+			creatures[i].x_bounds = screen_width;
+			creatures[i].y_bounds = screen_height;
+		}
+		resetPositions();
+		cout << "GENERATION " << generation << " STARTED!" << endl;
+	}
 }
 
 void World::update() {
-	int curr_update = 0;
-	//update loop
-	while (curr_update < max_num_updates) {
-		updateCreatures();
-		display();
-		curr_update++;
-	}
-	//setup creatures and NNs for next run.
-	updateFitness();
-	selectBest();
-	runNextGeneration();
-	if (generation < max_num_generation) {
-		update();
-	}
-	else {
-		cout << "finished" << endl;
+	updateCreatures();
+	updateObstacles();
+	checkCollision();
+	//display();
+	glutPostRedisplay();
+
+	curr_update++;
+	Sleep(50);
+	//cout << curr_update << " tick(s) passed" << endl;
+
+	if (curr_update > max_num_updates) {
+		updateFitness();
+		selectBest();
+		runNextGeneration();
 	}
 }
 
 void World::display() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < num_creatures; i++) {
 		creatures[i].display();
 	}
+	for (int i = 0; i < num_obstacles; i++) {
+		obstacles[i].display();
+	}
+	glutSwapBuffers();
 }
 
 void World::updateCreatures() {
 	for (int i = 0; i < num_creatures; i++) {
 		//send input: [x1, y1, vx1, vy1, x2, y2, vx2, vy2, x3, y3, vx3, vy3, creature_x, creature_y, creature_vx, creature_vy] 16
-		int x[16] = {obstacles[0].x_pos, obstacles[0].y_pos, obstacles[0].x_velocity, obstacles[0].y_velocity,
-					obstacles[1].x_pos, obstacles[1].y_pos, obstacles[1].x_velocity, obstacles[1].y_velocity,
-					obstacles[2].x_pos, obstacles[2].y_pos, obstacles[2].x_velocity, obstacles[2].y_velocity,
-					creatures[i].x_pos, creatures[i].y_pos, creatures[i].x_velocity, creatures[i].y_velocity};
+		int * x = new (int[(num_obstacles*4) + 4]);
+		for (int j = 0; j < num_obstacles; j++) {
+			for (int k = 0; k < 4; k++) {
+				if (k == 0) {
+					x[(j * 4) + k] = obstacles[j].x_pos;
+				}
+				if (k == 1) {
+					x[(j * 4) + k] = obstacles[j].y_pos;
+				}
+				if (k == 2) {
+					x[(j * 4) + k] = obstacles[j].x_velocity;
+				}
+				if (k == 3) {
+					x[(j * 4) + k] = obstacles[j].y_velocity;
+				}
+			}
+		}
+		for (int j = num_obstacles * 4; j < num_obstacles * 4 + 4; j++) {
+			if (j == 0) {
+				x[j] = creatures[j].x_pos;
+			}
+			if (j == 1) {
+				x[j] = creatures[j].y_pos;
+			}
+			if (j == 2) {
+				x[j] = creatures[j].x_velocity;
+			}
+			if (j == 3) {
+				x[j] = creatures[j].y_velocity;
+			}
+		}
 		creatures[i].nn->sendInput(x);
 		creatures[i].nn->train();
 		creatures[i].update();
 		creatures[i].fitness++;
+	}
+	//cout << creatures[1].nn->getOutput()[0] << endl;
+}
+
+void World::updateObstacles() {
+	for (int i = 0; i < num_obstacles; i++) {
+		obstacles[i].update();
+	}
+}
+
+float distance(Obstacle o, Creature c) {
+	return sqrt(pow(o.x_pos - c.x_pos, 2) + pow(o.y_pos - c.y_pos, 2));
+}
+void World::checkCollision() {
+	for (int i = 0; i < num_obstacles; i++) {
+		for (int j = 0; j < num_creatures; j++) {
+			if (distance(obstacles[i], creatures[j]) < 50) {
+				creatures[i].fitness -= 20*(1/distance(obstacles[i], creatures[j]));
+				if (creatures[i].fitness < 0) {
+					creatures[i].fitness = 0;
+				}
+			}
+		}
 	}
 }
 
@@ -104,6 +230,7 @@ void World::updateFitness() {
 	best_fitness = 0;
 	avg_fitness = 0;
 	for (int i = 0; i < num_creatures; i++) {
+		cout << creatures[i].fitness << endl;
 		total_fitness += creatures[i].fitness;
 		if (best_fitness < creatures[i].fitness) { best_fitness = creatures[i].fitness; }
 	}
@@ -141,8 +268,8 @@ void World::crossover() {
 	Creature parent2 = selectParent();
 	updateFitness();
 
-	Creature child1 = Creature();
-	Creature child2 = Creature();
+	Creature child1 = Creature(num_obstacles * 4 /*4 properties*/ + 4, 2 /*binary decision of left or right*/);
+	Creature child2 = Creature(num_obstacles * 4 /*4 properties*/ + 4, 2 /*binary decision of left or right*/);
 	double **** child1_weigths = child1.nn->getWeights();
 	double **** child2_weigths = child2.nn->getWeights();
 

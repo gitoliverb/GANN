@@ -1,4 +1,5 @@
 #pragma once
+#include <glut.h>
 
 class Obstacle {
 public:

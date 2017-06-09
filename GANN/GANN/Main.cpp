@@ -3,6 +3,7 @@
 
 #include "World.h"
 
+
 NeuralNetwork setUpNN() {
 	int num_inputs = 30;
 	int num_layers = 3;
@@ -28,11 +29,26 @@ void testNeuralNetwork() {
 	nn.printOutputs();
 }
 
-void testWorld() {	//not working yet
-	World w = World();
-	w.initWorld();
-	w.run();
+void testWorld(int argc, char** argv) {	//not working yet
+	World * w = new World();
+	w->setInstance(w);
+	w->initWorld();
+	w->initDisplay(argc, argv);
 }
+
+//void renderScene(void) {
+
+	
+
+	/*Example for drawing triangle
+	glBegin(GL_TRIANGLES);
+	glVertex3f(-0.5, -0.5, 0.0);
+	glVertex3f(0.5, 0.0, 0.0);
+	glVertex3f(0.0, 0.5, 0.0);
+	glEnd();*/
+
+	
+//}
 
 int main(int argc, char** argv) {
 	//setup for generating unique randoms.
@@ -40,7 +56,7 @@ int main(int argc, char** argv) {
 
 	//Run tests
 	//testNeuralNetwork();
-	testWorld();
+	testWorld(argc, argv);
 
-	//return 0;
+	return 1;
 }

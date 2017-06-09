@@ -132,7 +132,7 @@ void NeuralNetwork::trainHelper(double * x) {
 		}
 		curr_n_inputs = n_hidden_nodes[i];
 		curr_input = curr_out;
-		delete[] curr_out;
+		//delete[] curr_out;
 	}
 	outputs = curr_input;
 }
@@ -187,8 +187,8 @@ void NeuralNetwork::printOutputs() {
 }
 
 NeuralNetwork::~NeuralNetwork() {
-	delete[] inputs;
-	delete[] weights;
-	delete[] bias;
+	//delete[] inputs;
+	//delete[] weights;
+	//delete[] bias;
 	cout << "removed";
 }
