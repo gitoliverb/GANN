@@ -14,11 +14,12 @@ NeuralNetwork * setUpCreatureNN() {
 }
 
 NeuralNetwork * setUpCreatureNN(int num_inputs, int num_outputs) {
-	int num_layers = 3;
+	int num_layers = 1;
 	int* hidden_layers = new(int[num_layers]);
-	hidden_layers[0] = 3;
-	hidden_layers[1] = 5;
-	hidden_layers[2] = 3;
+	hidden_layers[0] = 250;
+	//hidden_layers[1] = 50;
+	//hidden_layers[2] = 8;
+	//hidden_layers[3] = 10;
 
 	return new NeuralNetwork(num_inputs, num_layers, hidden_layers, num_outputs);
 }
@@ -46,20 +47,20 @@ Creature::Creature(int num_inputs, int num_outputs) {
 }
 
 void Creature::update() {
-	x_velocity = nn->getOutput()[0];
-	x_velocity = -1*nn->getOutput()[1];
+	x_velocity = 5 * (nn->getOutput()[0] - nn->getOutput()[1]);
+	y_velocity = 5 * (nn->getOutput()[2] - nn->getOutput()[3]);
 	x_pos += x_velocity;
 	y_pos += y_velocity;
 	
 	//Check bounds
-	if (x_pos >= x_bounds) {
-		x_pos = x_bounds;
+	if (x_pos >= x_bounds - 10) {
+		x_pos = x_bounds - 10;
 	}
 	if (x_pos <= 0) {
 		x_pos = 0;
 	}
-	if (y_pos >= y_bounds) {
-		y_pos = y_bounds;
+	if (y_pos >= y_bounds - 10) {
+		y_pos = y_bounds-10;
 	}
 	if (y_pos <= 0) {
 		y_pos = 0;
@@ -69,7 +70,7 @@ void Creature::update() {
 
 void Creature::display() {
 	
-	glColor4f(0.0, 1.0, 0.0, 1.0);
+	glColor4f(0.0, -1*fmax(-1.0, -fitness/500), 0.5, 1.0);
 	/*
 	glBegin(GL_POLYGON);
 		glVertex3f(0.0, 0.0, 0.0);

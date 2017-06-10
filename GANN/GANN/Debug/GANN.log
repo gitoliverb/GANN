@@ -1,4 +1,3 @@
-﻿  World.cpp
-c:\users\brandon\documents\practice\machine learning vs new\gann\gann\world.cpp(263): warning C4715: 'World::selectParent': not all control paths return a value
+﻿  Creature.cpp
   GANN.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.exe
   GANN.vcxproj -> C:\Users\Brandon\Documents\Practice\Machine Learning VS new\GANN\Debug\GANN.pdb (Partial PDB)
