@@ -14,12 +14,17 @@ NeuralNetwork * setUpCreatureNN() {
 }
 
 NeuralNetwork * setUpCreatureNN(int num_inputs, int num_outputs) {
-	int num_layers = 1;
+	int num_layers = 2;
 	int* hidden_layers = new(int[num_layers]);
-	hidden_layers[0] = 250;
-	//hidden_layers[1] = 50;
-	//hidden_layers[2] = 8;
+	hidden_layers[0] = 150;
+	hidden_layers[1] = 16;
+	//hidden_layers[2] = 16;
 	//hidden_layers[3] = 10;
+	//hidden_layers[4] = 5;
+	//hidden_layers[5] = 10;
+	//hidden_layers[6] = 20;
+	//hidden_layers[7] = 40;
+	//hidden_layers[8] = 80;
 
 	return new NeuralNetwork(num_inputs, num_layers, hidden_layers, num_outputs);
 }
@@ -29,7 +34,7 @@ Creature::Creature() {
 	y_pos = 0;
 	x_velocity = 0;
 	y_velocity = 0;
-	fitness = 0;
+	fitness = 500;
 
 	nn = setUpCreatureNN();
 	nn->initNeuralNetwork();
@@ -40,15 +45,15 @@ Creature::Creature(int num_inputs, int num_outputs) {
 	y_pos = 0;
 	x_velocity = 0;
 	y_velocity = 0;
-	fitness = 0;
+	fitness = 500;
 
 	nn = setUpCreatureNN(num_inputs, num_outputs);
 	nn->initNeuralNetwork();
 }
 
 void Creature::update() {
-	x_velocity = 5 * (nn->getOutput()[0] - nn->getOutput()[1]);
-	y_velocity = 5 * (nn->getOutput()[2] - nn->getOutput()[3]);
+	x_velocity = 9 * (nn->getOutput()[0] - nn->getOutput()[1]);
+	y_velocity = 9 * (nn->getOutput()[2] - nn->getOutput()[3]);
 	x_pos += x_velocity;
 	y_pos += y_velocity;
 	

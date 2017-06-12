@@ -3,6 +3,10 @@
 
 using namespace std;
 
+float distance(Obstacle o, Creature c) {
+	return sqrt(pow(o.x_pos - c.x_pos, 2) + pow(o.y_pos - c.y_pos, 2));
+}
+
 World::World() {
 
 }
@@ -30,7 +34,7 @@ void World::initDisplay(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(480, 0);
 	glutInitWindowSize(screen_width, screen_height);
-	glutCreateWindow("Lighthouse3D- GLUT Tutorial");
+	glutCreateWindow("GANN - Collect the red");
 
 	// register callbacks
 	glutDisplayFunc(displayWrapper);
@@ -53,14 +57,16 @@ void World::reshape(int w, int h) {
 
 void World::initWorld() {
 	is_done = false;
-	curr_update = 0;
-	num_obstacles = 10;
-	num_creatures = 28;
 	generation = 0;
+	curr_update = 0;
+	num_obstacles = 6;
+	num_creatures = 12;
+	num_input_properties = 2;
+	num_output_properties = 4; /*all direction*/
 	mutation_rate = 0.001;
 	selection_perc = 0.4;
-	max_num_updates = 600;
-	max_num_generation = 40;
+	max_num_updates = 250;
+	max_num_generation = 50;
 
 	obstacles = new(Obstacle[num_obstacles]);
 	creatures = new(Creature[num_creatures]);
@@ -75,8 +81,7 @@ void World::initWorld() {
 	}
 	//init creatures
 	for (int i = 0; i < num_creatures; i++) {
-		//creatures[i] = Creature(num_obstacles *4 /*4 properties*/ + 4,  2 /*binary decision of left or right*/);
-		creatures[i] = Creature(num_obstacles * 4 /*4 properties*/ + 4, 4 /*all direction*/);
+		creatures[i] = Creature(num_input_properties, num_output_properties);
 		creatures[i].x_bounds = screen_width;
 		creatures[i].y_bounds = screen_height;
 	}
@@ -85,11 +90,11 @@ void World::initWorld() {
 
 void World::resetPositions() {
 	for (int i = 0; i < num_obstacles; i++) {
-		obstacles[i].x_velocity = -4 * ((rand() % 101) / 100.0) + 2;
-		obstacles[i].y_velocity = -4 * ((rand() % 101) / 100.0) + 2; //start by moving downard
+		//obstacles[i].x_velocity = -4 * ((rand() % 101) / 100.0) + 2;
+		//obstacles[i].y_velocity = -4 * ((rand() % 101) / 100.0) + 2; //start by moving downard
 		//set its position randomly on screen
-		obstacles[i].x_pos = (rand() % (screen_width / 3)) + (screen_width / 3);
-		obstacles[i].y_pos = (rand() % (2 * (screen_height / 3))) + (screen_height / 3);
+		obstacles[i].x_pos = (rand() % ((screen_width + 1) / 1));// +(screen_width / 3);
+		obstacles[i].y_pos = (rand() % (1 * ((screen_height + 1)/ 1)));// +(screen_height / 3);
 	}
 	for (int i = 0; i < num_creatures; i++) {
 		//set its position randomly on screen
@@ -126,7 +131,7 @@ void World::runNextGeneration() {
 		for (int i = 0; i < num_creatures; i++) {
 			creatures[i].nn->~NeuralNetwork();
 			creatures[i] = new_creatures[i];
-			creatures[i].fitness = 0;
+			creatures[i].fitness = 500;
 			creatures[i].x_bounds = screen_width;
 			creatures[i].y_bounds = screen_height;
 		}
@@ -164,30 +169,28 @@ void World::display() {
 	glutSwapBuffers();
 }
 
-void World::updateCreatures() {
+//REQUIRES num_input_properties = (num_obstacles * 4) + 4
+void World::inputStyle1() {
 	for (int i = 0; i < num_creatures; i++) {
-		//send input: [x1, y1, vx1, vy1, x2, y2, vx2, vy2, x3, y3, vx3, vy3, creature_x, creature_y, creature_vx, creature_vy] 16
-		int * x = new (int[(num_obstacles*4) + 4]);
+		int * x = new (int[num_input_properties]);
 		for (int j = 0; j < num_obstacles; j++) {
-			for (int k = 0; k < 4; k++) {
+			for (int k = 0; k < num_input_properties - 4; k++) {
 				if (k == 0) {
-					//x[(j * 4) + k] = (obstacles[j].x_pos - creatures[i].x_pos) / abs(obstacles[j].x_pos - creatures[i].x_pos);
-					x[(j * 4) + k] = (obstacles[j].x_pos - creatures[i].x_pos);
+					x[(j * num_input_properties) + k] = (obstacles[j].x_pos - creatures[i].x_pos);
 				}
 				if (k == 1) {
-					//x[(j * 4) + k] = (obstacles[j].y_pos - creatures[i].y_pos) / abs(obstacles[j].y_pos - creatures[i].y_pos);
-					x[(j * 4) + k] = (obstacles[j].y_pos - creatures[i].y_pos);
+					x[(j * num_input_properties) + k] = (obstacles[j].y_pos - creatures[i].y_pos);
 				}
 				if (k == 2) {
-					x[(j * 4) + k] = obstacles[j].x_velocity - creatures[i].x_velocity;
+					x[(j * num_input_properties) + k] = obstacles[j].x_velocity - creatures[i].x_velocity;
 				}
 				if (k == 3) {
-					x[(j * 4) + k] = obstacles[j].y_velocity - creatures[i].y_velocity;
+					x[(j * num_input_properties) + k] = obstacles[j].y_velocity - creatures[i].y_velocity;
 				}
 			}
 		}
-		for (int j = num_obstacles * 4; j < num_obstacles * 4 + 4; j++) {
-			int k = j - num_obstacles * 4;
+		for (int j = num_input_properties - 4; j < num_input_properties; j++) {
+			int k = j - (num_input_properties - 4);
 			if (k == 0) {
 				x[j] = creatures[i].x_pos;
 			}
@@ -204,12 +207,41 @@ void World::updateCreatures() {
 		creatures[i].nn->sendInput(x);
 		creatures[i].nn->train();
 		creatures[i].update();
-		creatures[i].fitness-=2;
+		creatures[i].fitness -= 2;
 		if (creatures[i].fitness < 1) {
 			creatures[i].fitness = 1;
 		}
 	}
-	//cout << creatures[1].nn->getOutput()[0] << "," << creatures[1].nn->getOutput()[1] << endl;
+}
+
+void World::inputStyle2() {
+	for (int i = 0; i < num_creatures; i++) {
+		int * x = new (int[num_input_properties]);
+		float curr_dist = screen_width;
+		for (int j = 0; j < num_obstacles; j++) {
+			if (distance(obstacles[j], creatures[i]) < curr_dist) {
+				curr_dist = distance(obstacles[j], creatures[i]);
+				x[0] = obstacles[j].x_pos - creatures[i].x_pos;
+				x[1] = obstacles[j].y_pos - creatures[i].y_pos;
+			}
+		}
+		//x[2] = creatures[i].x_pos;
+		//x[3] = creatures[i].y_pos;
+		//x[4] = creatures[i].x_velocity;
+		//x[5] = creatures[i].y_velocity;
+		creatures[i].nn->sendInput(x);
+		creatures[i].nn->train();
+		creatures[i].update();
+		creatures[i].fitness -= 2;
+		if (creatures[i].fitness < 1) {
+			creatures[i].fitness = 1;
+		}
+	}
+}
+
+void World::updateCreatures() {
+	//inputStyle1();
+	inputStyle2();
 }
 
 void World::updateObstacles() {
@@ -218,17 +250,17 @@ void World::updateObstacles() {
 	}
 }
 
-float distance(Obstacle o, Creature c) {
-	return sqrt(pow(o.x_pos - c.x_pos, 2) + pow(o.y_pos - c.y_pos, 2));
-}
 void World::checkCollision() {
 	for (int i = 0; i < num_obstacles; i++) {
 		for (int j = 0; j < num_creatures; j++) {
-			if (distance(obstacles[i], creatures[j]) < 20) {
-				creatures[j].fitness += 15;//20*(1/distance(obstacles[i], creatures[j]));
-				if (creatures[j].fitness < 0) {
-					creatures[j].fitness = 0;
+			if (distance(obstacles[i], creatures[j]) <= 15 && creatures[j].fitness > 1 /*not dead*/) {
+				creatures[j].fitness += 200;//20*(1/distance(obstacles[i], creatures[j]));
+				if (creatures[j].fitness > 500) {
+					creatures[j].fitness = 500;
 				}
+				//A hit occured, so reset position
+				obstacles[i].x_pos = (rand() % (screen_width / 3)) + (screen_width / 3);
+				obstacles[i].y_pos = (rand() % (2 * (screen_height / 3))) + (screen_height / 3);
 			}
 		}
 	}
@@ -239,6 +271,10 @@ void World::updateFitness() {
 	best_fitness = 0;
 	avg_fitness = 0;
 	for (int i = 0; i < num_creatures; i++) {
+		if (creatures[i].fitness <= 1) { //check if a creature died.
+			creatures[i] = Creature(num_input_properties, num_output_properties);
+			creatures[i].fitness = 2;
+		}
 		total_fitness += creatures[i].fitness;
 		if (best_fitness < creatures[i].fitness) { best_fitness = creatures[i].fitness; }
 	}
@@ -262,7 +298,7 @@ Creature World::selectParent() {
 		float selection_probability = creatures[i].fitness / total_fitness;
 		if (r >= current_prob && r <= current_prob + selection_probability) {
 			//Found parent
-			creatures[i].fitness = creatures[i].fitness*0.8; //reduce fitness, so it might not be chosen again.
+			creatures[i].fitness = creatures[i].fitness*0.95; //reduce fitness, so it might not be chosen again.
 			return creatures[i];
 		} else {
 			current_prob += selection_probability;
@@ -277,12 +313,10 @@ void World::crossover() {
 	Creature parent2 = selectParent();
 	updateFitness();
 
-	float num_inputs = num_obstacles * 4 /*4 properties*/ + 4;
-
 	//Creature child1 = Creature(num_inputs, 2 /*binary decision of left or right*/);
 	//Creature child2 = Creature(num_inputs, 2 /*binary decision of left or right*/);
-	Creature child1 = Creature(num_inputs, 4 /*all direction*/);
-	Creature child2 = Creature(num_inputs, 4 /*all direction*/);
+	Creature child1 = Creature(num_input_properties, num_output_properties);
+	Creature child2 = Creature(num_input_properties, num_output_properties);
 	double **** child1_weigths = child1.nn->getWeights();
 	double **** child2_weigths = child2.nn->getWeights();
 
@@ -299,7 +333,7 @@ void World::crossover() {
 					float rH = (1 / sqrt((double)curr_n_inputs));
 					child1_weigths[0][i][j][k] = (((double)(rand() % 100) + 1) / 100 * 2 * rH) - rH;
 					child2_weigths[0][i][j][k] = (((double)(rand() % 100) + 1) / 100 * 2 * rH) - rH;
-					cout << "mutation occured" << endl;
+					//cout << "mutation occured" << endl;
 				}else if (r <= 0.5) {
 					child1_weigths[0][i][j][k] = parent1.nn->getWeights()[0][i][j][k];
 					child2_weigths[0][i][j][k] = parent2.nn->getWeights()[0][i][j][k];

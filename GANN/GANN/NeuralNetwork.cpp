@@ -190,5 +190,5 @@ NeuralNetwork::~NeuralNetwork() {
 	//delete[] inputs;
 	//delete[] weights;
 	//delete[] bias;
-	cout << "removed";
+	//cout << "removed";
 }

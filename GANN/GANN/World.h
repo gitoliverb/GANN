@@ -13,19 +13,24 @@ public:
 	Obstacle * obstacles;
 	Creature * creatures;
 	Creature * new_creatures;
+
 	int generation;
+	int curr_update;
 	int num_obstacles;
 	int num_creatures;
+	int num_new_creatures;
+	int num_input_properties;
+	int num_output_properties;
 	int max_num_updates;
 	int max_num_generation;
-	int num_new_creatures;
-	int curr_update;
+
 	float selection_perc;
 	float mutation_rate;
 	float crossover_rate;
 	float total_fitness;
 	float best_fitness;
 	float avg_fitness;
+
 	bool is_done;
 
 	//display settings
@@ -43,7 +48,6 @@ public:
 	static void displayWrapper();
 	static void updateWrapper();
 	static void reshape(int w, int h);
-	//void renderScene();
 private:
 	void resetPositions();
 
@@ -51,6 +55,8 @@ private:
 	void update();
 	void checkCollision();
 	virtual void display();
+	void inputStyle1();
+	void inputStyle2();
 	void updateCreatures();
 	void updateObstacles();
 	void updateFitness();
